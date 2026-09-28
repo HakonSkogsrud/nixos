@@ -1,14 +1,5 @@
-{ config, pkgs, herdr, ... }:
+{ pkgs, herdr, ... }:
 
-let
-  setPowerProfile = pkgs.writeShellScript "set-power-profile" ''
-    profile=balanced
-    if read -r online < /sys/class/power_supply/ADP0/online && [ "$online" = 1 ]; then
-      profile=performance
-    fi
-    exec ${pkgs.power-profiles-daemon}/bin/powerprofilesctl set "$profile"
-  '';
-in
 {
   # ============================================================================
   # IMPORTS
@@ -16,6 +7,9 @@ in
   imports = [
     ./hardware-configuration.nix
     ./gnome.nix
+    ./networking.nix
+    ./power.nix
+    ./syncthing.nix
   ];
 
   # ============================================================================
@@ -26,34 +20,6 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # ============================================================================
-  # NETWORKING & HOSTNAME
-  # ============================================================================
-
-  networking.hostName = "nixos";
-  networking.networkmanager.enable = true;
-
-  # Prefer the normal LAN route over policy-routing tables (for example,
-  # tables installed by VPN software) when reaching the local subnet.
-  systemd.services.local-network-policy-rule = {
-    description = "Route the local subnet through the main routing table";
-    wantedBy = [ "network.target" ];
-    after = [ "NetworkManager.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      ${pkgs.iproute2}/bin/ip rule delete to 10.0.0.0/24 priority 5000 table main 2>/dev/null || true
-      # Ignore the main table's default route: use main only when the home LAN
-      # has a more-specific route, otherwise fall through to Tailscale's table.
-      ${pkgs.iproute2}/bin/ip rule add to 10.0.0.0/24 priority 5000 table main suppress_prefixlength 0
-    '';
-    preStop = ''
-      ${pkgs.iproute2}/bin/ip rule delete to 10.0.0.0/24 priority 5000 table main 2>/dev/null || true
-    '';
-  };
 
   # ============================================================================
   # LOCALE & TIMEZONE
@@ -286,7 +252,6 @@ in
     loupe
     darktable
     syncthing
-    vscode
     vscodium
     emacs-pgtk
     brave
@@ -296,29 +261,6 @@ in
     # Other Tools
     nodejs
   ];
-
-  # ============================================================================
-  # NETWORKING & FIREWALL
-  # ============================================================================
-
-  services.tailscale.enable = true;
-
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
-
-  networking.firewall = {
-    enable = true;
-    trustedInterfaces = [ "tailscale0" ];
-    allowedTCPPorts = [ 53317 ];
-    allowedUDPPorts = [
-      config.services.tailscale.port
-      53317
-    ];
-    checkReversePath = "loose";
-  };
 
   # ============================================================================
   # INPUT DEVICES
@@ -357,77 +299,6 @@ in
   # ============================================================================
   # SERVICES
   # ============================================================================
-
-  services.power-profiles-daemon.enable = true;
-
-  services.udev.extraRules = ''
-    ACTION=="change", SUBSYSTEM=="power_supply", KERNEL=="ADP0", RUN+="${setPowerProfile}"
-  '';
-
-  systemd.services.power-profile-on-boot = {
-    description = "Set power profile for current charger state";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "power-profiles-daemon.service" ];
-    requires = [ "power-profiles-daemon.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = setPowerProfile;
-    };
-  };
-
-  services.syncthing = {
-    enable = true;
-
-    user = "haaksk";
-
-    # The default directory where new synced folders will be created
-    dataDir = "/home/haaksk";
-
-    # Where Syncthing will store its settings, certificates, and database
-    configDir = "/home/haaksk/.config/syncthing";
-
-    # Automatically open ports (22000/TCP, 22000/UDP, 21027/UDP) in the firewall
-    openDefaultPorts = true;
-
-    # Declarative enforcement: Force NixOS settings to override GUI manual changes
-    overrideDevices = true;
-    overrideFolders = true;
-
-    settings = {
-      # 1. Register the remote server device
-      devices = {
-        "services" = {
-          id = "M7IMWFU-66PMZO3-WVVK2S7-NJDOZT3-XUIMWGU-3QMAX3B-5PMYWR5-LDA4MQV";
-          # Since 10.0.0.44 is a local/Tailscale IP, specifying it directly
-          # allows instant connection without relying on global discovery relays.
-          addresses = [ "tcp://10.0.0.44:22000" ];
-        };
-      };
-
-      # 2. Map the shared folder to your local Documents directory
-      folders = {
-        "Documents" = {
-          id = "ulv9z-dbglm"; # Must match the server's folder ID exactly
-          label = "Sync"; # Keeps the user-friendly label "Sync" in your GUI
-          path = "/home/haaksk/Documents"; # The local target directory on your laptop
-          devices = [ "services" ]; # Tell Syncthing to sync this folder with the server
-        };
-        "2026" = {
-          id = "c2xpa-nhtgu"; # Must match the server's folder ID exactly
-          label = "2026"; # Keeps the user-friendly label "Sync" in your GUI
-          path = "/home/haaksk/Pictures/2026"; # The local target directory on your laptop
-          devices = [ "services" ]; # Tell Syncthing to sync this folder with the server
-        };
-      };
-    };
-  };
-
-  # Enable systemd-resolved to fix Tailscale suspend/reboot DNS hangs
-  services.resolved = {
-    enable = true;
-    # Ensures a global fallback is used if Tailscale's DNS drops
-    settings.Resolve.Domains = [ "~." ];
-  };
 
   services.fwupd.enable = true;
 

@@ -11,5 +11,4 @@
   home.file.".config/ghostty/config".source = ./dotfiles/ghostty.conf;
   home.file.".config/lazygit/config.yml".source = ./dotfiles/lazygit.yml;
   home.file.".emacs".source = ./dotfiles/emacs.el;
-  home.file.".codex/config.toml".source = ./dotfiles/codex-config.toml;
 }

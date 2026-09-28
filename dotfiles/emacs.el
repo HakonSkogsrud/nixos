@@ -21,15 +21,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-;; Refresh package archives if stale (older than 7 days)
-(unless (and package-archive-contents
-             (let ((archive-time (nth 5 (file-attributes
-                                         (expand-file-name "archives/melpa/archive-contents"
-                                                           package-user-dir)))))
-               (and archive-time
-                    (< (float-time (time-subtract nil archive-time)) 604800))))
-  (package-refresh-contents))
-
 (require 'use-package)
 (setq use-package-always-ensure t)
 
@@ -41,7 +32,7 @@
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns x pgtk))
   :config
-  (dolist (var '("PATH" "GOPATH" "LC_ALL"))
+  (dolist (var '("PATH" "LC_ALL"))
     (exec-path-from-shell-copy-env var)))
 
 ;; NixOS / nix-shell / direnv integration
@@ -170,7 +161,9 @@
 (set-fringe-mode '(16 . 16))
 (column-number-mode t)
 (savehist-mode 1)
+(save-place-mode 1)
 (recentf-mode 1)
+(global-auto-revert-mode 1)
 
 (setq save-interprogram-paste-before-kill t
       kill-do-not-save-duplicates t
@@ -537,12 +530,24 @@ PROMPT, allow editing the detected variable before searching."
 ;; ==========================================
 
 (defun my/toggle-shell ()
-  "Toggle a shell at project root."
+  "Toggle the current project's shell in a bottom side window."
   (interactive)
-  (let ((shell-buf (get-buffer "*shell*")))
-    (if (and shell-buf (get-buffer-window shell-buf))
-        (quit-window nil (get-buffer-window shell-buf))
-      (project-shell))))
+  (let* ((default-directory (project-root (project-current t)))
+         (shell-name (project-prefixed-buffer-name "shell"))
+         (shell-buffer (get-buffer shell-name))
+         (shell-window (and shell-buffer
+                            (get-buffer-window shell-buffer (selected-frame)))))
+    (if (and shell-window
+             (eq (window-parameter shell-window 'window-side) 'bottom))
+        (delete-window shell-window)
+      (unless (and shell-buffer (comint-check-proc shell-buffer))
+        (setq shell-buffer
+              (save-window-excursion (shell shell-name))))
+      (select-window
+       (display-buffer-in-side-window
+        shell-buffer '((side . bottom)
+                       (slot . 0)
+                       (window-height . 0.3)))))))
 
 (defun my/shell-mode-setup ()
   (ansi-color-for-comint-mode-on)
