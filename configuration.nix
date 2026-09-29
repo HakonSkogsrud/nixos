@@ -99,6 +99,7 @@
     nerd-fonts.fantasque-sans-mono
     nerd-fonts.jetbrains-mono
     nerd-fonts.commit-mono
+    nerd-fonts.bitstream-vera-sans-mono
   ];
 
   fonts.fontconfig.defaultFonts = {
@@ -252,7 +253,7 @@
     loupe
     darktable
     syncthing
-    vscodium
+    vscode
     emacs-pgtk
     brave
     tailscale
