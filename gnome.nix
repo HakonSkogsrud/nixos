@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   services.xserver.enable = true;
@@ -61,7 +61,7 @@
         "org/gnome/shell" = {
           enabled-extensions = [
             "legacyschemeautoswitcher@joshimukul29.gmail.com"
-          ];
+          ] ++ config.local.gnome.extraExtensions;
         };
       };
     }

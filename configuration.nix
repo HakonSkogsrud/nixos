@@ -256,6 +256,7 @@
     vscode
     emacs-pgtk
     brave
+    brave-origin
     tailscale
     ptyxis
 
