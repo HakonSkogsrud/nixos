@@ -7,6 +7,7 @@
   imports = [
     ./hardware-configuration.nix
     ./gnome.nix
+    ./niri.nix
     ./networking.nix
     ./power.nix
     ./syncthing.nix

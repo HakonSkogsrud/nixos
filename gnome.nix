@@ -3,7 +3,7 @@
 {
   services.xserver.enable = true;
   services.displayManager.gdm.enable = true;
-  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.enable = false;
   services.displayManager.autoLogin.user = "haaksk";
   services.desktopManager.gnome.enable = true;
 
