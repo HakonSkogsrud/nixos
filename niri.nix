@@ -22,8 +22,9 @@
   };
   security.pam.services.greetd.enableGnomeKeyring = true;
 
-  # Keep terminal access and application icons without the GNOME desktop.
+  # Support X11 applications and provide fallback application icons.
   environment.systemPackages = with pkgs; [
+    xwayland-satellite
     hicolor-icon-theme
     adwaita-icon-theme
   ];
