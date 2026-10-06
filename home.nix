@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
   home.username = "haaksk";
@@ -37,15 +37,4 @@
   };
   dconf.settings."org/gnome/desktop/interface".icon-theme = "Papirus";
 
-  # Seed a writable upstream config once; Stow can replace it later.
-  home.activation.seedNiriConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    niriConfig="$HOME/.config/niri/config.kdl"
-    if [ ! -e "$niriConfig" ] && [ ! -L "$niriConfig" ]; then
-      run mkdir -p "$HOME/.config/niri"
-      run install -m 600 ${pkgs.niri.doc}/share/doc/niri/default-config.kdl "$niriConfig"
-      run sed -i \
-        's/Run an Application: fuzzel/Open Noctalia Launcher/; s/spawn "fuzzel"/spawn "noctalia" "msg" "panel-toggle" "launcher"/' \
-        "$niriConfig"
-    fi
-  '';
 }
