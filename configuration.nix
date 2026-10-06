@@ -197,13 +197,8 @@
       "org.gtk.Gtk3theme.adw-gtk3-dark"
       "org.onlyoffice.desktopeditors"
       "md.obsidian.Obsidian"
-      "io.github.CyberTimon.RapidRAW"
       "org.localsend.localsend_app"
       "org.signal.Signal"
-    ];
-
-    overrides."io.github.CyberTimon.RapidRAW".Context.filesystems = [
-      "/home/haaksk/Photos"
     ];
 
   };
