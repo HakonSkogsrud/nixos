@@ -255,6 +255,7 @@
     darktable
     syncthing
     vscode
+    libreoffice-fresh
     emacs-pgtk
     brave
     brave-origin
