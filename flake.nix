@@ -10,10 +10,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    herdr = {
-      url = "github:herdrdev/herdr-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -22,12 +18,10 @@
       nixpkgs,
       nix-flatpak,
       home-manager,
-      herdr,
     }:
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit herdr; };
         modules = [
           nix-flatpak.nixosModules.nix-flatpak
           home-manager.nixosModules.home-manager

@@ -1,4 +1,4 @@
-{ pkgs, herdr, ... }:
+{ pkgs, ... }:
 
 {
   # ============================================================================
@@ -218,7 +218,6 @@
     delta
     neovim
     gh
-    herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
     stow
     gcc
     python3
