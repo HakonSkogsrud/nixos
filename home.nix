@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   home.username = "haaksk";
@@ -35,57 +35,17 @@
       package = pkgs.papirus-icon-theme.override { color = "palebrown"; };
     };
   };
-  programs.fuzzel = {
-    enable = true;
-    settings.main.icon-theme = "Papirus";
-  };
   dconf.settings."org/gnome/desktop/interface".icon-theme = "Papirus";
 
-  # A reproducible starting session for the fresh Niri installation.
-  xdg.configFile."niri/config.kdl".text = ''
-    input {
-      keyboard {
-        xkb {
-          layout "no"
-          variant "nodeadkeys"
-          options "ctrl:nocaps"
-        }
-      }
-      touchpad {
-        tap
-        dwt
-        drag false
-      }
-    }
-
-    layout {
-      gaps 12
-      default-column-width { proportion 0.5; }
-      focus-ring { width 2; }
-    }
-
-    binds {
-      Mod+Return { spawn "alacritty"; }
-      Mod+D { spawn "fuzzel"; }
-      Mod+Shift+Slash { show-hotkey-overlay; }
-      Mod+Q { close-window; }
-      Mod+Left { focus-column-left; }
-      Mod+Right { focus-column-right; }
-      Mod+Up { focus-window-up; }
-      Mod+Down { focus-window-down; }
-      Mod+Shift+Left { move-column-left; }
-      Mod+Shift+Right { move-column-right; }
-      Mod+Shift+Up { move-window-up; }
-      Mod+Shift+Down { move-window-down; }
-      Mod+Page_Up { focus-workspace-up; }
-      Mod+Page_Down { focus-workspace-down; }
-      Mod+Shift+Page_Up { move-column-to-workspace-up; }
-      Mod+Shift+Page_Down { move-column-to-workspace-down; }
-      Mod+F { maximize-column; }
-      Mod+Shift+F { fullscreen-window; }
-      Mod+V { toggle-window-floating; }
-      Print { screenshot; }
-      Mod+Shift+E { quit; }
-    }
+  # Seed a writable upstream config once; Stow can replace it later.
+  home.activation.seedNiriConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    niriConfig="$HOME/.config/niri/config.kdl"
+    if [ ! -e "$niriConfig" ] && [ ! -L "$niriConfig" ]; then
+      run mkdir -p "$HOME/.config/niri"
+      run install -m 600 ${pkgs.niri.doc}/share/doc/niri/default-config.kdl "$niriConfig"
+      run sed -i \
+        's/Run an Application: fuzzel/Open Noctalia Launcher/; s/spawn "fuzzel"/spawn "noctalia" "msg" "panel-toggle" "launcher"/' \
+        "$niriConfig"
+    fi
   '';
 }
