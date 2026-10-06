@@ -6,7 +6,6 @@
   # ============================================================================
   imports = [
     ./hardware-configuration.nix
-    ./gnome.nix
     ./niri.nix
     ./networking.nix
     ./power.nix
@@ -42,7 +41,7 @@
   };
 
   # ============================================================================
-  # DISPLAY & DESKTOP ENVIRONMENT (X11 + GNOME)
+  # DISPLAY & KEYBOARD
   # ============================================================================
 
   # Keyboard configuration
@@ -193,8 +192,7 @@
   services.flatpak = {
     enable = true;
     packages = [
-      # Keep both variants available so GTK3 Flatpaks follow GNOME's
-      # light/dark appearance setting.
+      # Make both GTK3 theme variants available to Flatpak applications.
       "org.gtk.Gtk3theme.adw-gtk3"
       "org.gtk.Gtk3theme.adw-gtk3-dark"
       "org.onlyoffice.desktopeditors"
@@ -208,14 +206,6 @@
       "/home/haaksk/Photos"
     ];
 
-    # Both applications currently render a light client-side titlebar on
-    # native Wayland.  Use Mutter's X11 decorations until that is fixed
-    # upstream; the GTK theme itself still follows GNOME's color scheme.
-    overrides."org.localsend.localsend_app".Context.sockets = [
-      "x11"
-      "!wayland"
-      "!fallback-x11"
-    ];
   };
 
   # ============================================================================
@@ -270,7 +260,7 @@
   # INPUT DEVICES
   # ============================================================================
 
-  # Mouse motion normalization before GNOME settings.
+  # Mouse motion normalization before compositor settings.
   # Libinput scales motion down for DPI values above 1000.
   services.udev.extraHwdb = ''
     mouse:bluetooth:v1915p0040:name:*:
