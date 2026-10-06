@@ -244,7 +244,6 @@
     brave
     brave-origin
     tailscale
-    ptyxis
 
     # Other Tools
     nodejs
