@@ -72,7 +72,6 @@
     VISUAL = "nvim";
     NIXOS_OZONE_WL = "1";
     LIBVA_DRIVER_NAME = "iHD";
-    ZED_RENDERER = "gles"; # Force OpenGL ES to fix Zed editor Intel GPU lag/freezes
   };
 
   # ============================================================================
@@ -195,7 +194,6 @@
       # Make both GTK3 theme variants available to Flatpak applications.
       "org.gtk.Gtk3theme.adw-gtk3"
       "org.gtk.Gtk3theme.adw-gtk3-dark"
-      "org.onlyoffice.desktopeditors"
       "md.obsidian.Obsidian"
       "org.localsend.localsend_app"
       "org.signal.Signal"
@@ -237,13 +235,11 @@
     # Applications and Utilities
     loupe
     darktable
-    syncthing
     vscode
     libreoffice-fresh
     emacs-pgtk
     brave
     brave-origin
-    tailscale
 
     # Other Tools
     nodejs
