@@ -29,5 +29,7 @@
     adwaita-icon-theme
   ];
   programs.dconf.enable = true;
+  # Enable network shares and virtual filesystems in Nautilus.
+  services.gvfs.enable = true;
   environment.sessionVariables.XCURSOR_THEME = "Adwaita";
 }

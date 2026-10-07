@@ -30,11 +30,14 @@
 
   gtk = {
     enable = true;
+    gtk3.extraConfig.gtk-decoration-layout = ":";
+    gtk4.extraConfig.gtk-decoration-layout = ":";
     iconTheme = {
       name = "Papirus";
       package = pkgs.papirus-icon-theme.override { color = "palebrown"; };
     };
   };
   dconf.settings."org/gnome/desktop/interface".icon-theme = "Papirus";
+  dconf.settings."org/gnome/desktop/wm/preferences".button-layout = ":";
 
 }

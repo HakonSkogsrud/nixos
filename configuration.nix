@@ -233,6 +233,7 @@
     uv
 
     # Applications and Utilities
+    nautilus
     loupe
     darktable
     vscode
