@@ -13,6 +13,10 @@
   programs.alacritty = {
     enable = true;
     settings = {
+      window.padding = {
+        x = 12;
+        y = 12;
+      };
       window.dimensions = {
         columns = 110;
         lines = 30;
