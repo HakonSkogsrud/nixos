@@ -219,6 +219,7 @@
     nixfmt
     nix-direnv
     codex
+    herdr
 
     # Terminal and Shell Utilities
     wget
