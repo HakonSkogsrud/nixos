@@ -9,12 +9,20 @@
   home.file.".zshrc".source = ./dotfiles/zshrc;
   home.file.".tmux.conf".source = ./dotfiles/tmux.conf;
   home.file.".config/lazygit/config.yml".source = ./dotfiles/lazygit.yml;
-  home.file.".emacs".source = ./dotfiles/emacs.el;
+  # Emacs configuration is managed by .dotfiles/emacs-home.
   # Alacritty configuration is managed by .dotfiles/niri-noctalia.
-  home.packages = [ pkgs.alacritty ];
+  home.packages = [
+    pkgs.alacritty
+    pkgs.glib
+    pkgs.zip
+  ];
 
   gtk = {
     enable = true;
+    theme = {
+      name = "adw-gtk3";
+      package = pkgs.adw-gtk3;
+    };
     gtk3.extraConfig.gtk-decoration-layout = ":";
     gtk4.extraConfig.gtk-decoration-layout = ":";
     iconTheme = {

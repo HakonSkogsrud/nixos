@@ -238,7 +238,7 @@
     loupe
     darktable
     vscode
-    libreoffice-fresh
+    libreoffice
     emacs-pgtk
     brave
     brave-origin
