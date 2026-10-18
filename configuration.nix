@@ -1,4 +1,4 @@
-{ pkgs, herdr, ... }:
+{ pkgs, ... }:
 
 {
   # ============================================================================
@@ -7,7 +7,6 @@
   imports = [
     ./hardware-configuration.nix
     ./gnome.nix
-    ./niri.nix
     ./networking.nix
     ./power.nix
     ./syncthing.nix
@@ -228,7 +227,6 @@
     delta
     neovim
     gh
-    herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
     stow
     gcc
     python3
@@ -258,7 +256,6 @@
     libreoffice-fresh
     emacs-pgtk
     brave
-    brave-origin
     tailscale
     ptyxis
 
@@ -332,7 +329,7 @@
   system.autoUpgrade = {
     enable = false;
     dates = "04:00";
-    channel = "https://nixos.org/channels/nixos-unstable";
+    channel = "https://channels.nixos.org/nixos-26.05";
     allowReboot = false;
     persistent = true;
     randomizedDelaySec = "30min";
