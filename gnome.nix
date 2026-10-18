@@ -61,7 +61,8 @@
         "org/gnome/shell" = {
           enabled-extensions = [
             "legacyschemeautoswitcher@joshimukul29.gmail.com"
-          ] ++ config.local.gnome.extraExtensions;
+          ]
+          ++ config.local.gnome.extraExtensions;
         };
       };
     }
@@ -124,5 +125,7 @@
   };
 
   services.xserver.excludePackages = [ pkgs.xterm ];
+
+  services.fprintd.enable = true;
 
 }

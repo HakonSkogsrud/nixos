@@ -196,19 +196,13 @@
       # light/dark appearance setting.
       "org.gtk.Gtk3theme.adw-gtk3"
       "org.gtk.Gtk3theme.adw-gtk3-dark"
-      "org.onlyoffice.desktopeditors"
       "md.obsidian.Obsidian"
-      "io.github.CyberTimon.RapidRAW"
       "org.localsend.localsend_app"
       "org.signal.Signal"
     ];
 
-    overrides."io.github.CyberTimon.RapidRAW".Context.filesystems = [
-      "/home/haaksk/Photos"
-    ];
-
-    # Both applications currently render a light client-side titlebar on
-    # native Wayland.  Use Mutter's X11 decorations until that is fixed
+    # LocalSend currently renders a light client-side titlebar on native
+    # Wayland. Use Mutter's X11 decorations until that is fixed
     # upstream; the GTK theme itself still follows GNOME's color scheme.
     overrides."org.localsend.localsend_app".Context.sockets = [
       "x11"
@@ -252,7 +246,6 @@
     loupe
     darktable
     syncthing
-    vscode
     libreoffice-fresh
     emacs-pgtk
     brave

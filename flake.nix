@@ -6,10 +6,6 @@
     nix-flatpak = {
       url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
     };
-    home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     wsf = {
       url = "github:daniel-g-carrasco/wayland-scroll-factor/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,7 +21,6 @@
       self,
       nixpkgs,
       nix-flatpak,
-      home-manager,
       wsf,
       touchpad-speed-control,
     }:
@@ -35,15 +30,8 @@
         specialArgs = { inherit wsf touchpad-speed-control; };
         modules = [
           nix-flatpak.nixosModules.nix-flatpak
-          home-manager.nixosModules.home-manager
           ./configuration.nix
           ./scrollfix.nix
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "hm-backup";
-            home-manager.users.haaksk = import ./home.nix;
-          }
         ];
       };
     };
