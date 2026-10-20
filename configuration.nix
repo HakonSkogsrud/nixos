@@ -8,7 +8,6 @@
     ./hardware-configuration.nix
     ./gnome.nix
     ./networking.nix
-    ./power.nix
     ./syncthing.nix
   ];
 
@@ -19,7 +18,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Linux 7.3 triggered an intel_ipu6_isys runtime-suspend kernel oops on this XPS 9440.
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
 
   # ============================================================================
   # LOCALE & TIMEZONE
@@ -196,6 +196,7 @@
       # light/dark appearance setting.
       "org.gtk.Gtk3theme.adw-gtk3"
       "org.gtk.Gtk3theme.adw-gtk3-dark"
+      "org.libreoffice.LibreOffice"
       "org.onlyoffice.desktopeditors"
       "md.obsidian.Obsidian"
       "io.github.CyberTimon.RapidRAW"
@@ -253,7 +254,6 @@
     darktable
     syncthing
     vscode
-    libreoffice-fresh
     emacs-pgtk
     brave
     tailscale
