@@ -20,6 +20,8 @@
 
   # Linux 7.3 triggered an intel_ipu6_isys runtime-suspend kernel oops on this XPS 9440.
   boot.kernelPackages = pkgs.linuxPackages_6_18;
+  hardware.enableRedistributableFirmware = true;
+
 
   # ============================================================================
   # LOCALE & TIMEZONE

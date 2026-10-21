@@ -125,4 +125,6 @@
 
   services.xserver.excludePackages = [ pkgs.xterm ];
 
+  services.fprintd.enable = true;
+
 }
