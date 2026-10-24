@@ -74,7 +74,6 @@
     VISUAL = "nvim";
     NIXOS_OZONE_WL = "1";
     LIBVA_DRIVER_NAME = "iHD";
-    ZED_RENDERER = "gles"; # Force OpenGL ES to fix Zed editor Intel GPU lag/freezes
   };
 
   # ============================================================================
@@ -97,10 +96,7 @@
 
   fonts.packages = with pkgs; [
     inter
-    nerd-fonts.comic-shanns-mono
-    nerd-fonts.fantasque-sans-mono
     nerd-fonts.jetbrains-mono
-    nerd-fonts.commit-mono
     nerd-fonts.bitstream-vera-sans-mono
   ];
 
@@ -179,16 +175,9 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc
-    zlib
-    # Add any other common libs if needed, but the defaults usually cover node/python agents
-  ];
-
   programs.nh = {
     enable = true;
-    flake = "git+file:///home/haaksk/nixos";
+    flake = "git+file:///home/haaksk/Workspace/nixos";
   };
 
   services.flatpak = {
@@ -199,16 +188,11 @@
       "org.gtk.Gtk3theme.adw-gtk3"
       "org.gtk.Gtk3theme.adw-gtk3-dark"
       "org.libreoffice.LibreOffice"
-      "org.onlyoffice.desktopeditors"
       "md.obsidian.Obsidian"
-      "io.github.CyberTimon.RapidRAW"
       "org.localsend.localsend_app"
       "org.signal.Signal"
     ];
 
-    overrides."io.github.CyberTimon.RapidRAW".Context.filesystems = [
-      "/home/haaksk/Photos"
-    ];
 
     # Both applications currently render a light client-side titlebar on
     # native Wayland.  Use Mutter's X11 decorations until that is fixed
@@ -248,18 +232,14 @@
     zoxide
     eza
     zsh-autosuggestions
-    exiftool
     uv
 
     # Applications and Utilities
     loupe
     darktable
     syncthing
-    vscode
-    emacs-pgtk
     brave
     tailscale
-    ptyxis
 
     # Other Tools
     nodejs
@@ -290,14 +270,7 @@
     ];
   };
 
-  services.printing = {
-    enable = true;
-    browsed.enable = true;
-    drivers = with pkgs; [
-      gutenprint
-      hplip
-    ];
-  };
+  services.printing.enable = true;
 
   # ============================================================================
   # SERVICES

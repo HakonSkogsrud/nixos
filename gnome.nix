@@ -8,13 +8,11 @@
   services.desktopManager.gnome.enable = true;
 
   environment.systemPackages = with pkgs; [
-    hicolor-icon-theme
-    adwaita-icon-theme
     (papirus-icon-theme.override { color = "palebrown"; })
+    gnome-extension-manager
+    gnomeExtensions.bing-wallpaper-changer
 
-    ghostty
     bella
-    gnomeExtensions.legacy-gtk3-theme-scheme-auto-switcher
   ];
 
   # ============================================================================
@@ -58,11 +56,6 @@
           button-layout = "appmenu:close";
           titlebar-font = "Inter Bold 11";
         };
-        "org/gnome/shell" = {
-          enabled-extensions = [
-            "legacyschemeautoswitcher@joshimukul29.gmail.com"
-          ] ++ config.local.gnome.extraExtensions;
-        };
       };
     }
 
@@ -78,22 +71,14 @@
         "org/gnome/shell" = {
           favorite-apps = [
             "firefox.desktop"
-            "com.mitchellh.ghostty.desktop"
-            "emacs.desktop"
+            "org.gnome.Console.desktop"
+            "md.obsidian.Obsidian.desktop"
             "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
             "org.gnome.Nautilus.desktop"
-            "md.obsidian.Obsidian.desktop"
-            "org.onlyoffice.desktopeditors.desktop"
             "org.localsend.localsend_app.desktop"
-            "de.wwwtech.gitte.desktop"
-            "codium.desktop"
+            "org.signal.Signal.desktop"
             "org.darktable.darktable.desktop"
           ];
-        };
-        "org/gnome/desktop/background" = {
-          picture-uri = "file:///home/haaksk/Documents/wallpapers/gnome/flight_light.webp";
-          picture-uri-dark = "file:///home/haaksk/Documents/wallpapers/gnome/flight_dark.webp";
-          picture-options = "zoom";
         };
       };
     }

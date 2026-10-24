@@ -50,7 +50,13 @@
           path = "/home/haaksk/Pictures/Inbox";
           devices = [ "services" ];
         };
-      };
+        "Wallpapers" = {
+          id = "ynhu3-qtw6j";
+          label = "Wallpapers";
+          path = "/home/haaksk/Pictures/Wallpapers";
+          devices = [ "services" ];
+        };
+       };
     };
   };
 }
