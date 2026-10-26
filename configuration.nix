@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, unstablePkgs, ... }:
 
 {
   # ============================================================================
@@ -221,7 +221,7 @@
     nixd
     nixfmt
     nix-direnv
-    codex
+    unstablePkgs.codex
 
     # Terminal and Shell Utilities
     wget

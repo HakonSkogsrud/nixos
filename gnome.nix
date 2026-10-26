@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
 
 {
   services.xserver.enable = true;
@@ -10,7 +10,7 @@
   environment.systemPackages = with pkgs; [
     (papirus-icon-theme.override { color = "palebrown"; })
     gnome-extension-manager
-    gnomeExtensions.bing-wallpaper-changer
+    gnomeExtensions.blur-my-shell
 
     bella
   ];
@@ -45,8 +45,10 @@
           speed = -0.2;
         };
         "org/gnome/desktop/peripherals/touchpad" = {
+          tap-to-click = true;
           tap-and-drag = false;
           disable-while-typing = true;
+          disable-while-typing-timeout = lib.gvariant.mkUint32 1000;
         };
         "org/gnome/settings-daemon/plugins/power" = {
           power-button-action = "nothing";
