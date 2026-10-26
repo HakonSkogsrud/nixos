@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, unstablePkgs, ... }:
 
 {
   # ============================================================================
@@ -207,7 +207,7 @@
     nixd
     nixfmt
     nix-direnv
-    codex
+    unstablePkgs.codex
 
     # Terminal and Shell Utilities
     wget
@@ -289,7 +289,7 @@
   system.autoUpgrade = {
     enable = false;
     dates = "04:00";
-    channel = "https://channels.nixos.org/nixos-unstable";
+    channel = "https://channels.nixos.org/nixos-26.05";
     allowReboot = false;
     persistent = true;
     randomizedDelaySec = "30min";
