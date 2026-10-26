@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, unstablePkgs, ... }:
 
 {
   # ============================================================================
@@ -8,7 +8,6 @@
     ./hardware-configuration.nix
     ./kde.nix
     ./networking.nix
-    ./power.nix
     ./syncthing.nix
   ];
 
@@ -19,7 +18,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Linux 7.3 triggered an intel_ipu6_isys runtime-suspend kernel oops on this XPS 9440.
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
+  hardware.enableRedistributableFirmware = true;
 
   # ============================================================================
   # LOCALE & TIMEZONE
@@ -95,10 +96,7 @@
 
   fonts.packages = with pkgs; [
     inter
-    nerd-fonts.comic-shanns-mono
-    nerd-fonts.fantasque-sans-mono
     nerd-fonts.jetbrains-mono
-    nerd-fonts.commit-mono
     nerd-fonts.bitstream-vera-sans-mono
   ];
 
@@ -177,21 +175,15 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc
-    zlib
-    # Add any other common libs if needed, but the defaults usually cover node/python agents
-  ];
-
   programs.nh = {
     enable = true;
-    flake = "git+file:///home/haaksk/nixos";
+    flake = "git+file:///home/haaksk/Workspace/nixos";
   };
 
   services.flatpak = {
     enable = true;
     packages = [
+      "org.libreoffice.LibreOffice"
       "md.obsidian.Obsidian"
       "org.localsend.localsend_app"
       "org.signal.Signal"
@@ -215,7 +207,7 @@
     nixd
     nixfmt
     nix-direnv
-    codex
+    unstablePkgs.codex
 
     # Terminal and Shell Utilities
     wget
@@ -226,17 +218,13 @@
     zoxide
     eza
     zsh-autosuggestions
-    exiftool
     uv
 
     # Applications and Utilities
     darktable
     syncthing
-    libreoffice-fresh
-    emacs-pgtk
     brave
     tailscale
-    ghostty
 
     # Other Tools
     nodejs
@@ -267,14 +255,7 @@
     ];
   };
 
-  services.printing = {
-    enable = true;
-    browsed.enable = true;
-    drivers = with pkgs; [
-      gutenprint
-      hplip
-    ];
-  };
+  services.printing.enable = true;
 
   # ============================================================================
   # SERVICES
