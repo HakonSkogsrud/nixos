@@ -7,8 +7,6 @@
   services.displayManager.sddm.enable = true;
   services.displayManager.autoLogin.enable = false;
 
-  environment.systemPackages = [ pkgs.klassy ];
-
   services.fprintd.enable = true;
 
   # A terminal cannot offer PAM fingerprint and password authentication in

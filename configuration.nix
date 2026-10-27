@@ -73,7 +73,6 @@
     VISUAL = "nvim";
     NIXOS_OZONE_WL = "1";
     LIBVA_DRIVER_NAME = "iHD";
-    ZED_RENDERER = "gles"; # Force OpenGL ES to fix Zed editor Intel GPU lag/freezes
   };
 
   # ============================================================================
@@ -183,7 +182,6 @@
   services.flatpak = {
     enable = true;
     packages = [
-      "org.libreoffice.LibreOffice"
       "md.obsidian.Obsidian"
       "org.localsend.localsend_app"
       "org.signal.Signal"
@@ -208,6 +206,7 @@
     nixfmt
     nix-direnv
     unstablePkgs.codex
+    unstablePkgs.rapidraw
 
     # Terminal and Shell Utilities
     wget
@@ -221,6 +220,7 @@
     uv
 
     # Applications and Utilities
+    libreoffice-qt-fresh
     darktable
     syncthing
     brave
@@ -247,6 +247,11 @@
   # ============================================================================
   # HARDWARE
   # ============================================================================
+
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
 
   hardware.graphics = {
     enable = true;
