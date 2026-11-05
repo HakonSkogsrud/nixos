@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 
 {
   services.xserver.enable = true;
@@ -61,8 +61,7 @@
         "org/gnome/shell" = {
           enabled-extensions = [
             "legacyschemeautoswitcher@joshimukul29.gmail.com"
-          ]
-          ++ config.local.gnome.extraExtensions;
+          ];
         };
       };
     }
@@ -80,7 +79,6 @@
           favorite-apps = [
             "firefox.desktop"
             "com.mitchellh.ghostty.desktop"
-            "emacs.desktop"
             "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
             "org.gnome.Nautilus.desktop"
             "md.obsidian.Obsidian.desktop"

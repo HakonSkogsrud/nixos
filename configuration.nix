@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+
 
 {
   # ============================================================================
@@ -8,7 +8,6 @@
     ./hardware-configuration.nix
     ./gnome.nix
     ./networking.nix
-    ./power.nix
     ./syncthing.nix
   ];
 
@@ -72,7 +71,6 @@
     VISUAL = "nvim";
     NIXOS_OZONE_WL = "1";
     LIBVA_DRIVER_NAME = "iHD";
-    ZED_RENDERER = "gles"; # Force OpenGL ES to fix Zed editor Intel GPU lag/freezes
   };
 
   # ============================================================================
@@ -98,7 +96,6 @@
     nerd-fonts.comic-shanns-mono
     nerd-fonts.fantasque-sans-mono
     nerd-fonts.jetbrains-mono
-    nerd-fonts.commit-mono
     nerd-fonts.bitstream-vera-sans-mono
   ];
 
@@ -130,23 +127,6 @@
           Status = "user";
         };
       };
-
-      # Automatically install extensions
-      ExtensionSettings = {
-        "uBlock0@raymondhill.net" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
-          installation_mode = "force_installed";
-        };
-        "jid1-MnnxcxisBPnSXQ@jetpack" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/privacy-badger17/latest.xpi";
-          installation_mode = "force_installed";
-        };
-        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-          installation_mode = "force_installed";
-        };
-      };
-
     };
   };
 
@@ -196,6 +176,7 @@
       # light/dark appearance setting.
       "org.gtk.Gtk3theme.adw-gtk3"
       "org.gtk.Gtk3theme.adw-gtk3-dark"
+      "org.libreoffice.LibreOffice"
       "md.obsidian.Obsidian"
       "org.localsend.localsend_app"
       "org.signal.Signal"
@@ -228,7 +209,7 @@
     nixd
     nixfmt
     nix-direnv
-    codex
+    unstablePkgs.codex
 
     # Terminal and Shell Utilities
     wget
@@ -244,10 +225,7 @@
 
     # Applications and Utilities
     loupe
-    darktable
     syncthing
-    libreoffice-fresh
-    emacs-pgtk
     brave
     tailscale
     ptyxis
@@ -281,14 +259,7 @@
     ];
   };
 
-  services.printing = {
-    enable = true;
-    browsed.enable = true;
-    drivers = with pkgs; [
-      gutenprint
-      hplip
-    ];
-  };
+  services.printing.enable = true;
 
   # ============================================================================
   # SERVICES

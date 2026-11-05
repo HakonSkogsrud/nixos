@@ -27,27 +27,10 @@
 
   services.tailscale.enable = true;
 
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
-
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ "tailscale0" ];
-    allowedTCPPorts = [ 53317 ];
-    allowedUDPPorts = [
-      config.services.tailscale.port
-      53317
-    ];
+    allowedUDPPorts = [ config.services.tailscale.port ];
     checkReversePath = "loose";
-  };
-
-  # Enable systemd-resolved to fix Tailscale suspend/reboot DNS hangs
-  services.resolved = {
-    enable = true;
-    # Ensures a global fallback is used if Tailscale's DNS drops
-    settings.Resolve.Domains = [ "~." ];
   };
 }
