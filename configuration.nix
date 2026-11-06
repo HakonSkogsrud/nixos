@@ -77,6 +77,11 @@
     LIBVA_DRIVER_NAME = "iHD";
   };
 
+  programs.bash.shellAliases = {
+    ls = "ls -Ah1 --group-directories-first --color=auto";
+    ll = "ls -l";
+  };
+
   # --- Hardware --------------------------------------------------------------
 
   hardware.graphics = {
