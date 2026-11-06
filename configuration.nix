@@ -78,7 +78,7 @@
   };
 
   programs.bash.shellAliases = {
-    ls = "ls -Ah1 --group-directories-first --color=auto";
+    ls = "ls -Alh --group-directories-first --color=auto";
     ll = "ls -l";
   };
 
