@@ -1,32 +1,46 @@
-{ pkgs, unstablePkgs, ... }:
+{
+  config,
+  pkgs,
+  unstablePkgs,
+  ...
+}:
 
 {
-  # ============================================================================
-  # IMPORTS
-  # ============================================================================
-  imports = [
-    ./hardware-configuration.nix
-    ./gnome.nix
-    ./networking.nix
-    ./syncthing.nix
-  ];
+  imports = [ ./hardware-configuration.nix ];
 
-  # ============================================================================
-  # BOOT & SYSTEM CORE
-  # ============================================================================
+  # --- Boot ------------------------------------------------------------------
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # ============================================================================
-  # LOCALE & TIMEZONE
-  # ============================================================================
+  # --- Nix -------------------------------------------------------------------
+
+  nixpkgs.config.allowUnfree = true;
+
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    auto-optimise-store = true;
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 10d";
+  };
+
+  programs.nh = {
+    enable = true;
+    flake = "git+file:///home/haaksk/nixos";
+  };
+
+  # --- Locale, time, keyboard ------------------------------------------------
 
   time.timeZone = "Europe/Oslo";
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "nb_NO.UTF-8";
     LC_IDENTIFICATION = "nb_NO.UTF-8";
@@ -39,43 +53,13 @@
     LC_TIME = "nb_NO.UTF-8";
   };
 
-  # ============================================================================
-  # DISPLAY & DESKTOP ENVIRONMENT (X11 + GNOME)
-  # ============================================================================
-
-  # Keyboard configuration
   services.xserver.xkb = {
     layout = "no";
     variant = "nodeadkeys";
   };
   console.keyMap = "no";
 
-  # ============================================================================
-  # AUDIO & SOUND (PipeWire)
-  # ============================================================================
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
-
-  # ============================================================================
-  # ENVIRONMENT & SESSION VARIABLES
-  # ============================================================================
-
-  environment.sessionVariables = {
-    EDITOR = "nvim";
-    VISUAL = "nvim";
-    NIXOS_OZONE_WL = "1";
-    LIBVA_DRIVER_NAME = "iHD";
-  };
-
-  # ============================================================================
-  # USERS
-  # ============================================================================
+  # --- User ------------------------------------------------------------------
 
   users.users.haaksk = {
     isNormalUser = true;
@@ -84,12 +68,114 @@
       "networkmanager"
       "wheel"
     ];
-    shell = pkgs.zsh;
+    shell = pkgs.bashInteractive;
   };
 
-  # ============================================================================
-  # FONTS
-  # ============================================================================
+  environment.sessionVariables = {
+    EDITOR = "nvim";
+    NIXOS_OZONE_WL = "1";
+    LIBVA_DRIVER_NAME = "iHD";
+  };
+
+  # --- Hardware --------------------------------------------------------------
+
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [ intel-media-driver ];
+  };
+
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
+  };
+
+  services.printing.enable = true;
+  services.fwupd.enable = true;
+  services.fprintd.enable = true;
+
+  # Libinput scales motion down for DPI values above 1000.
+  services.udev.extraHwdb = ''
+    mouse:bluetooth:v1915p0040:name:*:
+     MOUSE_DPI=1200@1000
+
+    mouse:bluetooth:v046Dp0B020:name:*:
+     MOUSE_DPI=1800@1000
+  '';
+
+  # --- Networking ------------------------------------------------------------
+
+  networking.hostName = "nixos";
+  networking.networkmanager.enable = true;
+
+  services.tailscale.enable = true;
+
+  networking.firewall = {
+    enable = true;
+    trustedInterfaces = [ "tailscale0" ];
+    allowedUDPPorts = [ config.services.tailscale.port ];
+    checkReversePath = "loose";
+  };
+
+  # Prefer the normal LAN route over policy-routing tables (for example,
+  # tables installed by VPN software) when reaching the local subnet.
+  systemd.services.local-network-policy-rule = {
+    description = "Route the local subnet through the main routing table";
+    wantedBy = [ "network.target" ];
+    after = [ "NetworkManager.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      ${pkgs.iproute2}/bin/ip rule delete to 10.0.0.0/24 priority 5000 table main 2>/dev/null || true
+      # Ignore the main table's default route: use main only when the home LAN
+      # has a more-specific route, otherwise fall through to Tailscale's table.
+      ${pkgs.iproute2}/bin/ip rule add to 10.0.0.0/24 priority 5000 table main suppress_prefixlength 0
+    '';
+    preStop = ''
+      ${pkgs.iproute2}/bin/ip rule delete to 10.0.0.0/24 priority 5000 table main 2>/dev/null || true
+    '';
+  };
+
+  services.syncthing = {
+    enable = true;
+    user = "haaksk";
+    dataDir = "/home/haaksk";
+    configDir = "/home/haaksk/.config/syncthing";
+    openDefaultPorts = true;
+
+    # Nix settings override anything changed in the GUI.
+    overrideDevices = true;
+    overrideFolders = true;
+
+    settings = {
+      devices.services = {
+        id = "M7IMWFU-66PMZO3-WVVK2S7-NJDOZT3-XUIMWGU-3QMAX3B-5PMYWR5-LDA4MQV";
+        # Direct address avoids relying on global discovery relays.
+        addresses = [ "tcp://10.0.0.44:22000" ];
+      };
+
+      folders.Documents = {
+        id = "ulv9z-dbglm"; # Must match the server's folder ID
+        label = "Sync";
+        path = "/home/haaksk/Documents";
+        devices = [ "services" ];
+      };
+    };
+  };
+
+  # --- Desktop (GNOME) -------------------------------------------------------
+
+  services.xserver.enable = true;
+  services.xserver.excludePackages = [ pkgs.xterm ];
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
+
+  # Drop all default GNOME apps, then add back only the ones wanted.
+  services.gnome.core-apps.enable = false;
 
   fonts.packages = with pkgs; [
     inter
@@ -104,45 +190,65 @@
     monospace = [ "JetBrainsMono Nerd Font" ];
   };
 
-  # ============================================================================
-  # PROGRAMS & APPLICATIONS
-  # ============================================================================
+  programs.dconf.enable = true;
+  programs.dconf.profiles.user.databases = [
+    {
+      settings = {
+        "org/gnome/desktop/interface" = {
+          accent-color = "blue";
+          show-battery-percentage = true;
+          icon-theme = "Papirus";
+          font-name = "Inter 11";
+          document-font-name = "Inter 11";
+          monospace-font-name = "JetBrainsMono Nerd Font 11";
+        };
+        "org/gnome/desktop/input-sources".xkb-options = [ "ctrl:nocaps" ];
+        "org/gnome/system/locale".region = "nb_NO.UTF-8";
+        "org/gnome/desktop/peripherals/mouse".speed = -0.2;
+        "org/gnome/desktop/peripherals/touchpad" = {
+          tap-and-drag = false;
+          disable-while-typing = true;
+        };
+        "org/gnome/settings-daemon/plugins/power" = {
+          power-button-action = "nothing";
+          sleep-inactive-ac-type = "nothing";
+        };
+        "org/gnome/desktop/wm/preferences" = {
+          button-layout = "appmenu:close";
+          titlebar-font = "Inter Bold 11";
+        };
+        "org/gnome/shell".favorite-apps = [
+          "firefox.desktop"
+          "com.mitchellh.ghostty.desktop"
+          "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
+          "org.gnome.Nautilus.desktop"
+          "md.obsidian.Obsidian.desktop"
+          "org.localsend.localsend_app.desktop"
+        ];
+      };
+    }
+  ];
 
-  # Firefox with declarative enterprise policies
+  # --- Applications ----------------------------------------------------------
+
   programs.firefox = {
     enable = true;
-
-    policies = {
-      Preferences = {
-        "media.ffmpeg.vaapi.enabled" = {
-          Value = true;
-          Status = "user";
-        };
-        "widget.wayland-dmabuf-vaapi.enabled" = {
-          Value = true;
-          Status = "user";
-        };
-        "toolkit.legacyUserProfileCustomizations.stylesheets" = {
-          Value = true;
-          Status = "user";
-        };
+    policies.Preferences = {
+      "media.ffmpeg.vaapi.enabled" = {
+        Value = true;
+        Status = "user";
+      };
+      "widget.wayland-dmabuf-vaapi.enabled" = {
+        Value = true;
+        Status = "user";
+      };
+      "toolkit.legacyUserProfileCustomizations.stylesheets" = {
+        Value = true;
+        Status = "user";
       };
     };
   };
 
-  programs.zsh = {
-    enable = true;
-    interactiveShellInit = ''
-      source ${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    '';
-  };
-
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
-  };
-
-  # Git configuration
   programs.git = {
     enable = true;
     config = {
@@ -151,155 +257,48 @@
     };
   };
 
-  # ============================================================================
-  # PACKAGE MANAGEMENT
-  # ============================================================================
-
-  nixpkgs.config.allowUnfree = true;
-
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc
-    zlib
-    # Add any other common libs if needed, but the defaults usually cover node/python agents
-  ];
-
-  programs.nh = {
+  programs.direnv = {
     enable = true;
-    flake = "git+file:///home/haaksk/nixos";
+    nix-direnv.enable = true;
   };
 
   services.flatpak = {
     enable = true;
     packages = [
-      # Keep both variants available so GTK3 Flatpaks follow GNOME's
-      # light/dark appearance setting.
-      "org.gtk.Gtk3theme.adw-gtk3"
-      "org.gtk.Gtk3theme.adw-gtk3-dark"
       "org.libreoffice.LibreOffice"
       "md.obsidian.Obsidian"
       "org.localsend.localsend_app"
       "org.signal.Signal"
     ];
-
-    # LocalSend currently renders a light client-side titlebar on native
-    # Wayland. Use Mutter's X11 decorations until that is fixed
-    # upstream; the GTK theme itself still follows GNOME's color scheme.
-    overrides."org.localsend.localsend_app".Context.sockets = [
-      "x11"
-      "!wayland"
-      "!fallback-x11"
-    ];
   };
-
-  # ============================================================================
-  # SYSTEM PACKAGES
-  # ============================================================================
 
   environment.systemPackages = with pkgs; [
-    # Development Tools and Editors
+    # Desktop
+    ghostty
+    brave
+    loupe
+    nautilus
+    gnome-text-editor
+    gnome-calendar
+    gnome-calculator
+    papers
+    gnome-system-monitor
+    hicolor-icon-theme
+    adwaita-icon-theme
+    (papirus-icon-theme.override { color = "palebrown"; })
+
+    # Development
+    neovim
     lazygit
     delta
-    neovim
     gh
     stow
-    gcc
-    python3
-    lua-language-server
     nixd
     nixfmt
-    nix-direnv
     unstablePkgs.codex
-
-    # Terminal and Shell Utilities
-    wget
-    fzf
-    fd
-    bat
-    ripgrep
-    zoxide
-    eza
-    zsh-autosuggestions
-    exiftool
-    uv
-
-    # Applications and Utilities
-    loupe
-    syncthing
-    brave
-    tailscale
-    ptyxis
-
-    # Other Tools
-    nodejs
+    unstablePkgs.vscode
   ];
 
-  # ============================================================================
-  # INPUT DEVICES
-  # ============================================================================
-
-  # Mouse motion normalization before GNOME settings.
-  # Libinput scales motion down for DPI values above 1000.
-  services.udev.extraHwdb = ''
-    mouse:bluetooth:v1915p0040:name:*:
-     MOUSE_DPI=1200@1000
-
-    mouse:bluetooth:v046Dp0B020:name:*:
-     MOUSE_DPI=1800@1000
-  '';
-
-  # ============================================================================
-  # HARDWARE
-  # ============================================================================
-
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-    ];
-  };
-
-  services.printing.enable = true;
-
-  # ============================================================================
-  # SERVICES
-  # ============================================================================
-
-  services.fwupd.enable = true;
-
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
-  # ============================================================================
-  # NIX PACKAGE MANAGER
-  # ============================================================================
-
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 10d";
-  };
-
-  nix.settings.auto-optimise-store = true;
-
-  # ============================================================================
-  # SYSTEM UPDATES & STATE
-  # ============================================================================
-
-  # Disabled auto-upgrade to avoid frequent kernel recompilations
-  # Run 'sudo nixos-rebuild switch' manually when you want to apply updates
-  system.autoUpgrade = {
-    enable = false;
-    dates = "04:00";
-    channel = "https://channels.nixos.org/nixos-26.05";
-    allowReboot = false;
-    persistent = true;
-    randomizedDelaySec = "30min";
-  };
-
-  # DO NOT change this value. It does NOT track your current NixOS version.
-  # It records which version you originally installed on (for backwards compatibility).
+  # Records the release originally installed; do NOT change.
   system.stateVersion = "25.11";
 }
