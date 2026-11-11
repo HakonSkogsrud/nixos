@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  unstablePkgs,
   ...
 }:
 
@@ -101,6 +100,21 @@
   services.fwupd.enable = true;
   services.fprintd.enable = true;
 
+  # A terminal cannot offer PAM fingerprint and password authentication in
+  # parallel.  Skip the following fprintd rule when the built-in display is
+  # closed, allowing sudo to proceed directly to password authentication.
+  security.pam.services.sudo.rules.auth.lidOpen = {
+    order = config.security.pam.services.sudo.rules.auth.fprintd.order - 10;
+    control = "[success=ignore default=1]";
+    modulePath = "${pkgs.pam}/lib/security/pam_exec.so";
+    args = [
+      "quiet"
+      "${pkgs.writeShellScript "is-laptop-lid-open" ''
+        ${pkgs.gnugrep}/bin/grep -q '^state:.*open' /proc/acpi/button/lid/*/state
+      ''}"
+    ];
+  };
+
   # Libinput scales motion down for DPI values above 1000.
   services.udev.extraHwdb = ''
     mouse:bluetooth:v1915p0040:name:*:
@@ -183,7 +197,6 @@
   services.gnome.core-apps.enable = false;
 
   fonts.packages = with pkgs; [
-    inter
     nerd-fonts.comic-shanns-mono
     nerd-fonts.fantasque-sans-mono
     nerd-fonts.jetbrains-mono
@@ -191,7 +204,6 @@
   ];
 
   fonts.fontconfig.defaultFonts = {
-    sansSerif = [ "Inter" ];
     monospace = [ "JetBrainsMono Nerd Font" ];
   };
 
@@ -203,8 +215,6 @@
           accent-color = "blue";
           show-battery-percentage = true;
           icon-theme = "Papirus";
-          font-name = "Inter 11";
-          document-font-name = "Inter 11";
           monospace-font-name = "JetBrainsMono Nerd Font 11";
         };
         "org/gnome/desktop/input-sources".xkb-options = [ "ctrl:nocaps" ];
@@ -220,11 +230,10 @@
         };
         "org/gnome/desktop/wm/preferences" = {
           button-layout = "appmenu:close";
-          titlebar-font = "Inter Bold 11";
         };
         "org/gnome/shell".favorite-apps = [
           "firefox.desktop"
-          "com.mitchellh.ghostty.desktop"
+          "org.gnome.Ptyxis.desktop"
           "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
           "org.gnome.Nautilus.desktop"
           "md.obsidian.Obsidian.desktop"
@@ -279,7 +288,7 @@
 
   environment.systemPackages = with pkgs; [
     # Desktop
-    ghostty
+    ptyxis
     brave
     loupe
     nautilus
@@ -300,8 +309,8 @@
     stow
     nixd
     nixfmt
-    unstablePkgs.codex
-    unstablePkgs.vscode
+    codex
+    vscode
   ];
 
   # Records the release originally installed; do NOT change.
