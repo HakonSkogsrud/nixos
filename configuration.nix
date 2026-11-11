@@ -212,6 +212,8 @@
     {
       settings = {
         "org/gnome/desktop/interface" = {
+          # Keep this unlocked so the extension can switch light/dark variants.
+          gtk-theme = "adw-gtk3";
           accent-color = "blue";
           show-battery-percentage = true;
           icon-theme = "Papirus";
@@ -231,6 +233,9 @@
         "org/gnome/desktop/wm/preferences" = {
           button-layout = "appmenu:close";
         };
+        "org/gnome/shell".enabled-extensions = [
+          "legacyschemeautoswitcher@joshimukul29.gmail.com"
+        ];
         "org/gnome/shell".favorite-apps = [
           "firefox.desktop"
           "org.gnome.Ptyxis.desktop"
@@ -279,6 +284,9 @@
   services.flatpak = {
     enable = true;
     packages = [
+      # Make both variants available to GTK3 Flatpaks.
+      "org.gtk.Gtk3theme.adw-gtk3"
+      "org.gtk.Gtk3theme.adw-gtk3-dark"
       "org.libreoffice.LibreOffice"
       "md.obsidian.Obsidian"
       "org.localsend.localsend_app"
@@ -299,6 +307,8 @@
     gnome-system-monitor
     hicolor-icon-theme
     adwaita-icon-theme
+    adw-gtk3
+    gnomeExtensions.legacy-gtk3-theme-scheme-auto-switcher
     (papirus-icon-theme.override { color = "palebrown"; })
 
     # Development
