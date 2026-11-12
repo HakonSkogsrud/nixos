@@ -197,6 +197,7 @@
   services.gnome.core-apps.enable = false;
 
   fonts.packages = with pkgs; [
+    nerd-fonts.blex-mono
     nerd-fonts.comic-shanns-mono
     nerd-fonts.fantasque-sans-mono
     nerd-fonts.jetbrains-mono
@@ -204,7 +205,7 @@
   ];
 
   fonts.fontconfig.defaultFonts = {
-    monospace = [ "JetBrainsMono Nerd Font" ];
+    monospace = [ "BlexMono Nerd Font" ];
   };
 
   programs.dconf.enable = true;
@@ -217,7 +218,7 @@
           accent-color = "blue";
           show-battery-percentage = true;
           icon-theme = "Papirus";
-          monospace-font-name = "JetBrainsMono Nerd Font 11";
+          monospace-font-name = "BlexMono Nerd Font 11";
         };
         "org/gnome/desktop/input-sources".xkb-options = [ "ctrl:nocaps" ];
         "org/gnome/system/locale".region = "nb_NO.UTF-8";
@@ -238,7 +239,7 @@
         ];
         "org/gnome/shell".favorite-apps = [
           "firefox.desktop"
-          "org.gnome.Ptyxis.desktop"
+          "com.mitchellh.ghostty.desktop"
           "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
           "org.gnome.Nautilus.desktop"
           "md.obsidian.Obsidian.desktop"
@@ -296,7 +297,8 @@
 
   environment.systemPackages = with pkgs; [
     # Desktop
-    ptyxis
+    ghostty
+    bitwarden-desktop
     brave
     loupe
     nautilus
