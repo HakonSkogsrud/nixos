@@ -76,11 +76,6 @@
     LIBVA_DRIVER_NAME = "iHD";
   };
 
-  programs.bash.shellAliases = {
-    ls = "ls -Alh --group-directories-first --color=auto";
-    ll = "ls -l";
-  };
-
   # --- Hardware --------------------------------------------------------------
 
   hardware.graphics = {
@@ -297,7 +292,6 @@
 
   environment.systemPackages = with pkgs; [
     # Desktop
-    ghostty
     bitwarden-desktop
     brave
     loupe
@@ -314,6 +308,7 @@
     (papirus-icon-theme.override { color = "palebrown"; })
 
     # Development
+    emacs-pgtk
     neovim
     lazygit
     delta
@@ -322,7 +317,6 @@
     nixd
     nixfmt
     codex
-    vscode
   ];
 
   # Records the release originally installed; do NOT change.
