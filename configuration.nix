@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  pkgsUnstable,
   ...
 }:
 
@@ -234,9 +235,10 @@
         ];
         "org/gnome/shell".favorite-apps = [
           "firefox.desktop"
-          "com.mitchellh.ghostty.desktop"
+          "org.gnome.Terminal.desktop"
           "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
           "org.gnome.Nautilus.desktop"
+          "emacs.desktop"
           "md.obsidian.Obsidian.desktop"
           "org.localsend.localsend_app.desktop"
         ];
@@ -297,6 +299,7 @@
     loupe
     nautilus
     gnome-text-editor
+    gnome-terminal
     gnome-calendar
     gnome-calculator
     papers
@@ -316,7 +319,7 @@
     stow
     nixd
     nixfmt
-    codex
+    pkgsUnstable.codex
   ];
 
   # Records the release originally installed; do NOT change.

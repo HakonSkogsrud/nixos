@@ -1,11 +1,7 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
   home.stateVersion = "25.11";
-
-  home.packages = with pkgs; [
-    ghostty
-  ];
 
   programs.bash = {
     enable = true;
@@ -13,5 +9,4 @@
   };
 
   home.file.".emacs".source = ./init.el;
-  xdg.configFile."ghostty/config".source = ./ghostty.conf;
 }
