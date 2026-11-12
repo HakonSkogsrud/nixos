@@ -5,6 +5,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
+(cua-mode 1)
 
 ;; Use Emacs' built-in light theme
 (load-theme 'modus-operandi t)
