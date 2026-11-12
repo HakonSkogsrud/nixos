@@ -56,6 +56,7 @@
   services.xserver.xkb = {
     layout = "no";
     variant = "nodeadkeys";
+    options = "ctrl:nocaps";
   };
   console.keyMap = "no";
 
@@ -179,6 +180,13 @@
         path = "/home/haaksk/Documents";
         devices = [ "services" ];
       };
+
+      folders.Wallpapers = {
+        id = "ynhu3-qtw6j"; # Must match the server's folder ID
+        label = "Wallpapers";
+        path = "/home/haaksk/Pictures/Wallpapers";
+        devices = [ "services" ];
+      };
     };
   };
 
@@ -207,10 +215,13 @@
   programs.dconf.enable = true;
   programs.dconf.profiles.user.databases = [
     {
+      # Keep this unlocked so the extension can switch light/dark variants.
+      settings."org/gnome/desktop/interface".gtk-theme = "adw-gtk3";
+    }
+    {
+      lockAll = true;
       settings = {
         "org/gnome/desktop/interface" = {
-          # Keep this unlocked so the extension can switch light/dark variants.
-          gtk-theme = "adw-gtk3";
           accent-color = "blue";
           show-battery-percentage = true;
           icon-theme = "Papirus";
@@ -235,7 +246,7 @@
         ];
         "org/gnome/shell".favorite-apps = [
           "firefox.desktop"
-          "org.gnome.Terminal.desktop"
+          "org.gnome.Console.desktop"
           "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
           "org.gnome.Nautilus.desktop"
           "emacs.desktop"
@@ -299,7 +310,7 @@
     loupe
     nautilus
     gnome-text-editor
-    gnome-terminal
+    gnome-console
     gnome-calendar
     gnome-calculator
     papers
