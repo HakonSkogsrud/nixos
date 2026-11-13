@@ -97,6 +97,12 @@
   services.fwupd.enable = true;
   services.fprintd.enable = true;
 
+  # XPS 14 9440: set touchpad haptic intensity to 30% when it appears.
+  # Match the hardware rather than a hidraw number, which can change at boot.
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="hidraw", KERNELS=="0018:2C2F:002B.*", RUN+="${pkgs.hid-tools}/bin/hid-feature set /dev/%k -f b0000 30"
+  '';
+
   # A terminal cannot offer PAM fingerprint and password authentication in
   # parallel.  Skip the following fprintd rule when the built-in display is
   # closed, allowing sudo to proceed directly to password authentication.
@@ -225,7 +231,7 @@
           accent-color = "blue";
           show-battery-percentage = true;
           icon-theme = "Papirus";
-          monospace-font-name = "BlexMono Nerd Font 11";
+          monospace-font-name = "BlexMono Nerd qFont 11";
         };
         "org/gnome/desktop/input-sources".xkb-options = [ "ctrl:nocaps" ];
         "org/gnome/system/locale".region = "nb_NO.UTF-8";
