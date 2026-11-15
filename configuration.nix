@@ -100,10 +100,10 @@
   # XPS 14 9440: set touchpad haptic intensity to 30% when it appears.
   # Match the hardware rather than a hidraw number, which can change at boot.
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="hidraw", KERNELS=="0018:2C2F:002B.*", RUN+="${pkgs.hid-tools}/bin/hid-feature set /dev/%k -f b0000 30"
+    ACTION=="add", SUBSYSTEM=="hidraw", KERNELS=="0018:2C2F:002B.*", RUN+="${pkgs.hid-tools}/bin/hid-feature set /dev/%k -f b0000 40"
   '';
 
-  # A terminal cannot offer PAM fingerprint and password authentication in
+  # A terminal cannot offer PAM fingerprint and password authenticat|ion in
   # parallel.  Skip the following fprintd rule when the built-in display is
   # closed, allowing sudo to proceed directly to password authentication.
   security.pam.services.sudo.rules.auth.lidOpen = {
