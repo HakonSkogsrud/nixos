@@ -103,6 +103,13 @@
     ACTION=="add", SUBSYSTEM=="hidraw", KERNELS=="0018:2C2F:002B.*", RUN+="${pkgs.hid-tools}/bin/hid-feature set /dev/%k -f b0000 40"
   '';
 
+  # Tag before 73-seat-late.rules grants device access to the logged-in user.
+  services.udev.packages = [
+    (pkgs.writeTextDir "lib/udev/rules.d/70-svive-strike7.rules" ''
+      SUBSYSTEM=="hidraw", ATTRS{idVendor}=="342d", ATTRS{idProduct}=="e4f6", TAG+="uaccess"
+    '')
+  ];
+
   # A terminal cannot offer PAM fingerprint and password authenticat|ion in
   # parallel.  Skip the following fprintd rule when the built-in display is
   # closed, allowing sudo to proceed directly to password authentication.
@@ -326,7 +333,8 @@
     adw-gtk3
     gnomeExtensions.legacy-gtk3-theme-scheme-auto-switcher
     (papirus-icon-theme.override { color = "palebrown"; })
-
+    via
+      
     # Development
     emacs-pgtk
     neovim
