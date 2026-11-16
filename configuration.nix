@@ -97,6 +97,10 @@
   services.fwupd.enable = true;
   services.fprintd.enable = true;
 
+  # Reject brushes beginning at the edges, while preserving centre-started gestures.
+  environment.etc."libinput/plugins/10-xps-edge-palms.lua".source =
+    ./touchpad/10-xps-edge-palms.lua;
+
   # XPS 14 9440: set touchpad haptic intensity to 30% when it appears.
   # Match the hardware rather than a hidraw number, which can change at boot.
   services.udev.extraRules = ''

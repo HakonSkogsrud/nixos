@@ -1,2 +1,4 @@
-# Emacs auto-save files
+# Emacs backup, auto-save, and lock files
+*~
 \#*\#
+.\#*
