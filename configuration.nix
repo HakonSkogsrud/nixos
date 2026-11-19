@@ -242,7 +242,7 @@
           accent-color = "blue";
           show-battery-percentage = true;
           icon-theme = "Papirus";
-          monospace-font-name = "BlexMono Nerd qFont 11";
+          monospace-font-name = "BlexMono Nerd Font 11";
         };
         "org/gnome/desktop/input-sources".xkb-options = [ "ctrl:nocaps" ];
         "org/gnome/system/locale".region = "nb_NO.UTF-8";
@@ -263,7 +263,7 @@
         ];
         "org/gnome/shell".favorite-apps = [
           "firefox.desktop"
-          "org.gnome.Console.desktop"
+          "com.mitchellh.ghostty.desktop"
           "brave-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop"
           "org.gnome.Nautilus.desktop"
           "emacs.desktop"
@@ -338,6 +338,7 @@
     gnomeExtensions.legacy-gtk3-theme-scheme-auto-switcher
     (papirus-icon-theme.override { color = "palebrown"; })
     via
+    ghostty
       
     # Development
     emacs-pgtk
